@@ -63,9 +63,32 @@ fn main() -> ! {
             }
             State::PreSleep => {
                 info!("Now in PreSleep...");
+                led.set_high();
+                delay.delay_millis(2000);
+                led.toggle();
+                delay.delay_millis(200);
+                led.toggle();
+                delay.delay_millis(2000);
                 state = State::DeepSleep;
             }
-            _ => {}
+            State::DeepSleep => {
+                info!("Now in DeepSleep...");
+                led.set_low();
+                for _ in 0..100 {
+                    if button.is_low() {
+                        delay.delay_millis(20);
+                        if button.is_low() {
+                            info!("Button pressed!");
+                            state = State::Blinking;
+                        }
+                        while button.is_low() {
+                            delay.delay_millis(5);
+                        }
+                        continue;
+                    }
+                    delay.delay_millis(10);
+                }
+            }
         }
     }
 }
